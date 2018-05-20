@@ -1,0 +1,182 @@
+<!doctype html>               <!--申明html文档-->
+<html>
+ <head>
+  <meta charset="utf-8">      <!--字符编码为国际编码-->
+  <meta name="Author" content="JS40期风屿——不懂就问">    <!--网页创建者-->
+  <meta name="Keywords" content="作业，练习题">         <!--供搜索引擎搜索匹配的关键-->
+  <meta name="description" content="课后练习题作业，熟悉课堂学习操作">  <!--在搜索有结果页面显示的网页描述-->
+  <title>第24次课后作业</title>   <!--网页标题-->
+  <style>
+	body, p, ul, dl, dd, ol, h1, h2, h3, h4, h5, h6{ margin:0;}
+	ul,ol{ padding-left:0;list-style:none;}
+	table{ border-collapse:collapse; }
+	th, td{ padding: 0; }
+	em,i{ font-style:normal;/*设置字体样式：正常显示（就是不倾斜）*/}
+	strong,b{ font-weight:normal;/*设置字体加粗：正常显示（就是不加粗）*/}
+	a{ text-decoration:none;/*去掉下划线*/}
+    .clearfix:after{
+        display: block;
+        content: "";
+        clear: both;
+    }
+    body{
+        background-color: #929196;
+    }
+    .select-city{
+        width: 800px;
+        margin: 100px auto;
+    }
+    .select-city>div{
+        float: left;
+        width: 396px;
+        height: 600px;
+        border: 1px solid gray;
+    }
+    .select{
+        background-color: #fff;
+    }
+
+    .editCity{
+        height: 200px;
+        border-bottom: 1px solid gray;
+    }
+    .editCity li{
+        float: left;
+        height: 25px;
+        padding-left: 5px;
+        margin: 10px;
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 25px;
+        color: gray;
+        background-color: #e2e2e2;
+    }
+    .editCity i{
+        position: relative;
+        top:-8px;
+        left: 0;
+        padding-right: 2px;
+        font-size: 0;
+        margin-left: 10px;
+
+    }
+    .editCity li i:after{
+        content: "×";
+        font-size: 12px;
+    }
+    .cityList>li,.selected li{
+        float: left;
+        height: 25px;
+        font-size: 18px;
+        line-height: 25px;
+        cursor: pointer;
+    }
+    .cityList>li{
+        padding: 0 5px;
+        margin: 5px;
+        border:1px solid gray;
+    }
+    .selected{
+        background-color: #555;
+    }
+    .selected li {
+        width: 80px;
+        margin: 10px;
+        background-color: #aaa;
+    }
+  </style>
+     <!--
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+      -->
+</head>
+<body>
+    <div class="select-city clearfix">
+        <div class="select">
+            <ul class="editCity">
+                <p>已选择的城市：</p>
+            </ul>
+            <ul class="cityList">
+                <p>请选择的城市：</p>
+                <li>陕西</li>
+                <li>西安</li>
+                <li>杭州</li>
+                <li>汉中</li>
+                <li>乌鲁木齐</li>
+                <li>齐齐哈尔</li>
+                <li>黑龙江</li>
+            </ul>
+        </div>
+        <div class="selected"></div>
+    </div>
+<script>
+    var getCity = document.querySelectorAll(".cityList li"),
+        editCity = document.getElementsByClassName("editCity")[0],
+        selectCity = document.getElementsByClassName("selected")[0],
+        index = 0;
+    // 从列表添加城市
+    for(var i=0;i<getCity.length;i++){
+        getCity[i].index = i;
+        // 绑定添加事件
+        getCity[i].onclick = function () {
+            // console.log(this.index)
+            // 用自定义index 属性，判断添加的标签是否已经存在可编辑栏
+            index = this.index;
+            var editCityLi = editCity.getElementsByTagName("li"),
+                num = null;
+            //console.log(num);
+            if(editCityLi.length >= 5){
+                alert("最多添加5个城市");
+            }else {
+                if(editCityLi.length > 0){
+                    for(var i=0;i<editCityLi.length;i++){
+                        // 存在，退出循环，弹框提示
+                        if(editCityLi[i].index === index){
+                            num = i;
+                            alert("该城市已添加，请勿重复添加");
+                            break;
+                        }
+                    }
+                }
+                if(num === null){
+                    // 不存在，clone节点，并添加
+                    var li = this.cloneNode(true),
+                        ii = document.createElement("i"); // 新增i标签节点
+                    //console.log(this);
+                    // console.log(li);
+                    editCity.appendChild(li);
+                    // 获取添加的对象，设置index 属性值为当前事件值。
+                    editCityLi = editCity.getElementsByTagName("li");
+                    editCityLi[editCityLi.length-1].index = index;
+                    // 编辑已选城市
+                    ii.onclick = function () {
+                        editCity.removeChild(this.parentNode);
+                        addSelected();
+                    }
+                    editCityLi[editCityLi.length-1].insertBefore(ii,editCityLi[editCityLi.length-1].children[i]);
+
+
+
+                    // 同时将editCity 中的节点添加到selected中
+                    function addSelected() {
+                        var ulAdd = editCity.cloneNode(true),
+                            //ulRemove = document.createElement("ul");
+                            ulRemove = selectCity.getElementsByTagName("ul")[0];
+                        //console.log(typeof  ulRemove);
+                        if(ulRemove !== undefined){
+                            //console.log(ulRemove.parentNode);
+                            ulRemove.parentNode.removeChild(ulRemove)
+                            //selectCity.removeChild(ulRemove);
+                        }
+                        selectCity.appendChild(ulAdd);
+                        selectCity.getElementsByTagName("ul")[0].className='';
+                    };
+                    addSelected();
+
+                }
+            }
+
+        }
+    }
+</script>
+</body>
+</html>
